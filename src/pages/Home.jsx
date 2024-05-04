@@ -7,8 +7,6 @@ const Home = () => {
 
     const [jobs, setJobs] = useState(null);
 
-    console.log(getJobs(uri));
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -21,27 +19,46 @@ const Home = () => {
 
         fetchData();
     }, []);
+
+    const renderCards = () => {
+        if (!jobs) return null;
+        return jobs.map((job) => (
+            <div
+                key={job.jdUid}
+                style={{
+                    flex: "0 0 calc(33.33% - 20px)",
+                    marginBottom: "20px",
+                }}
+            >
+                <Card
+                    companyName={job.companyName}
+                    jdLink={job.jdLink}
+                    jdUid={job.jdUid}
+                    jobDetailsFromCompany={job.jobDetailsFromCompany}
+                    jobRole={job.jobRole}
+                    location={job.location}
+                    logoUrl={job.logoUrl}
+                    maxExp={job.maxExp}
+                    maxJdSalary={job.maxJdSalary}
+                    minExp={job.minExp}
+                    minJdSalary={job.minJdSalary}
+                    salaryCurrencyCode={job.salaryCurrencyCode}
+                />
+            </div>
+        ));
+    };
+
     return (
-        <div>
-            {jobs !== null &&
-                jobs.map((job) => (
-                    <Card
-                        key={job.jdUid}
-                        companyName={job.companyName}
-                        jdLink={job.jdLink}
-                        jdUid={job.jdUid}
-                        jobDetailsFromCompany={job.jobDetailsFromCompany}
-                        jobRole={job.jobRole}
-                        location={job.location}
-                        logoUrl={job.logoUrl}
-                        maxExp={job.maxExp}
-                        maxJdSalary={job.maxJdSalary}
-                        minExp={job.minExp}
-                        minJdSalary={job.minJdSalary}
-                        salaryCurrencyCode={job.salaryCurrencyCode}
-                    />
-                ))}
-            <Card />
+        <div
+            style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                maxWidth: "1920px",
+                margin: "0 auto",
+            }}
+        >
+            {renderCards()}
         </div>
     );
 };

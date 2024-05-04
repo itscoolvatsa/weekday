@@ -1,6 +1,7 @@
 import React from "react";
 import { Bolt, HourglassBottom } from "@mui/icons-material";
 import { Box, Button, Link, Typography } from "@mui/material";
+import capitalize from "../utils/utils";
 
 const Card = ({
     companyName,
@@ -22,6 +23,7 @@ const Card = ({
                 border: "1px solid grey",
                 width: "360px",
                 borderRadius: 2,
+                margin: "10px",
             }}
         >
             <Box
@@ -53,8 +55,8 @@ const Card = ({
                     <Typography sx={{ color: "#8B8B8B" }}>
                         {companyName}
                     </Typography>
-                    <Typography>{jobRole}</Typography>
-                    <Typography>{location}</Typography>
+                    <Typography>{capitalize(jobRole)}</Typography>
+                    <Typography>{capitalize(location)}</Typography>
                 </Box>
             </Box>
             <p>{`Estimated Salary: ${salaryCurrencyCode} ${
