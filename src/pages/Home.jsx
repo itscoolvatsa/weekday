@@ -1,10 +1,10 @@
 import { Box } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Card from "../components/Card";
-import { Dropdown, MultiSelectAutocomplete } from "../components/Dropdown";
+import { MultiSelectAutocomplete } from "../components/Dropdown";
 import getJobs from "../requests/getJobs";
 import { experience, noOfEmployees, salary } from "../utils/employees";
-import { roles, workLocaltion } from "../utils/roles";
+import { roles, rolesExpanded, workLocaltion } from "../utils/roles";
 
 const Home = () => {
     const uri = "https://api.weekday.technology/adhoc/getSampleJdJSON";
@@ -14,15 +14,16 @@ const Home = () => {
     // offset to control the data loading as per the scroll
     const [offset, setOffset] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [filteredJobs, setFilteredJobs] = useState([]);
 
     const pageRef = useRef(null);
 
     // states for dropdown for filtering data
-    const [selectedRoles, setSelectedRoles] = useState("");
-    const [selectedNoOfEmployees, setSelectedNoOfEmployees] = useState("");
-    const [selectedExperience, setSelectedExperience] = useState("");
-    const [selectedWorkLocation, setSelectedWorkLocation] = useState("");
-    const [selectedSalary, setSelectedSalary] = useState("");
+    const [selectedRoles, setSelectedRoles] = useState([]);
+    const [selectedNoOfEmployees, setSelectedNoOfEmployees] = useState([]);
+    const [selectedExperience, setSelectedExperience] = useState([]);
+    const [selectedWorkLocation, setSelectedWorkLocation] = useState([]);
+    const [selectedSalary, setSelectedSalary] = useState([]);
 
     // Handlers for dropdown changes
     const handleRolesChange = (data) => {
@@ -45,44 +46,25 @@ const Home = () => {
         setSelectedSalary(data);
     };
 
-    // for the first load (for loading 9 jobs)
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const data = await getJobs(uri, offset);
-                setOffset((o) => o + 10);
-                setJobs(data);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        const pgRef = pageRef.current;
         const handleIntersect = (entries) => {
-            if (entries[0].isIntersecting) {
+            if (entries[0].isIntersecting && !loading) {
                 loadMoreData();
             }
         };
 
+        let pgref = pageRef.current;
+
         const loadMoreData = async () => {
-            if (!loading) {
-                try {
-                    setLoading(true);
-                    const data = await getJobs(uri, offset);
-                    setOffset((o) => o + 10);
-                    setJobs((prevJobs) => [...prevJobs, ...data]);
-                    setLoading(false);
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                    setLoading(false);
-                }
+            try {
+                setLoading(true);
+                const data = await getJobs(uri, offset);
+                setOffset((prevOffset) => prevOffset + 9); // Increment offset
+                setJobs((prevJobs) => [...prevJobs, ...data]);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -92,16 +74,102 @@ const Home = () => {
             threshold: 1.0,
         });
 
-        if (pgRef) {
-            observer.observe(pgRef);
+        if (pgref) {
+            observer.observe(pgref);
         }
 
         return () => {
-            if (pgRef) {
-                observer.unobserve(pgRef);
+            if (pgref) {
+                observer.unobserve(pgref);
             }
         };
     }, [loading, offset]);
+
+    const filterJobs = (
+        jobs,
+        selectedRoles,
+        selectedNoOfEmployees,
+        selectedExperience,
+        selectedWorkLocation,
+        selectedSalary
+    ) => {
+        return jobs.filter((job) => {
+            // Filter by selected roles
+            if (
+                selectedRoles.length > 0 &&
+                !selectedRoles.some(
+                    (role) =>
+                        rolesExpanded[role]["cluster"].toLowerCase() ===
+                            job.jobRole.toLowerCase() ||
+                        (rolesExpanded[role]["secondaryCluster"] &&
+                            rolesExpanded[role][
+                                "secondaryCluster"
+                            ].toLowerCase() === job.jobRole.toLowerCase())
+                )
+            ) {
+                return false;
+            }
+
+            // Filter by selected work location
+            if (
+                selectedWorkLocation.length > 0 &&
+                !selectedWorkLocation.some(
+                    (location) =>
+                        location.toLowerCase() === job.location.toLowerCase()
+                )
+            ) {
+                return false;
+            }
+
+            // Filter by selected salary
+            if (
+                selectedSalary.length > 0 &&
+                !selectedSalary.some(
+                    (salary) =>
+                        job.minJdSalary === null || job.minJdSalary >= salary
+                )
+            ) {
+                return false;
+            }
+
+            // Filter by selected experience
+            if (
+                selectedExperience.length > 0 &&
+                !selectedExperience.some(
+                    (experience) =>
+                        job.minExp === null || job.minExp >= experience
+                )
+            ) {
+                return false;
+            }
+
+            // Filter by selected number of employees N/A
+
+            return true;
+        });
+    };
+
+    useEffect(() => {
+        // Filter the loaded jobs based on the applied filters
+        const filtered = filterJobs(
+            jobs,
+            selectedRoles,
+            selectedNoOfEmployees,
+            selectedExperience,
+            selectedWorkLocation,
+            selectedSalary
+        );
+
+        // Set the filtered jobs state
+        setFilteredJobs(filtered);
+    }, [
+        jobs,
+        selectedRoles,
+        selectedNoOfEmployees,
+        selectedExperience,
+        selectedWorkLocation,
+        selectedSalary,
+    ]);
 
     const renderCards = () => (
         <Box
@@ -111,7 +179,9 @@ const Home = () => {
             maxWidth="1920px"
             margin="0 auto"
         >
-            {jobs.map((job) => (
+            {" "}
+            {console.log(jobs.length)}
+            {filteredJobs.map((job) => (
                 <div
                     key={job.jdUid}
                     style={{
@@ -148,7 +218,7 @@ const Home = () => {
                 margin: "0 auto",
             }}
         >
-            <Box>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <MultiSelectAutocomplete
                     data={roles}
                     defaultValue="roles"
@@ -169,17 +239,11 @@ const Home = () => {
                     defaultValue="Remote"
                     onSelectedDataChange={handleWorkLocationChange}
                 />
-                {/* <Dropdown
-                    data={salary}
-                    defaultValue="Minimum Base Pay Salary"
-                    onSelectedDataChange={handleSalaryChange}
-                /> */}
                 <MultiSelectAutocomplete
                     data={salary}
                     defaultValue="Minimum Base Pay Salary"
                     onSelectedDataChange={handleSalaryChange}
                 />
-                {/* {console.log(salary)} */}
             </Box>
 
             {renderCards()}

@@ -1,48 +1,13 @@
-import { Autocomplete, Chip, MenuItem, Stack, TextField } from "@mui/material";
-import React, { useState } from "react";
+import { Autocomplete, Stack, TextField } from "@mui/material";
+import React from "react";
 
-const Dropdown = ({ data, defaultValue, placeholder }) => {
-    const [selectedValue, setSelectedValue] = useState(defaultValue);
-
-    const handleChange = (event) => {
-        setSelectedValue(event.target.value);
-    };
-
-    return (
-        <TextField
-            select
-            label="Select"
-            defaultValue={defaultValue}
-            value={selectedValue}
-            onChange={handleChange}
-            variant="outlined"
-            SelectProps={{
-                displayEmpty: true,
-                renderValue: (value) => value || placeholder,
-            }}
-            sx={{ m: 1, width: "250px" }}
-        >
-            <MenuItem disabled value="">
-                {placeholder}
-            </MenuItem>
-            {data.map((option) => (
-                <MenuItem
-                    key={option}
-                    value={option}
-                    selected={selectedValue === option}
-                >
-                    {option}
-                </MenuItem>
-            ))}
-        </TextField>
-    );
-};
-
-const MultiSelectAutocomplete = ({ data, defaultValue }) => {
-    const [selectedValues, setSelectedValues] = React.useState(defaultValue);
-
+const MultiSelectAutocomplete = ({
+    data,
+    defaultValue,
+    onSelectedDataChange,
+}) => {
     const handleChange = (event, newValues) => {
-        setSelectedValues(newValues);
+        onSelectedDataChange(newValues);
     };
 
     return (
@@ -62,9 +27,8 @@ const MultiSelectAutocomplete = ({ data, defaultValue }) => {
                     />
                 )}
             />
-            {console.log(selectedValues)}
         </Stack>
     );
 };
 
-export { Dropdown, MultiSelectAutocomplete };
+export { MultiSelectAutocomplete };
