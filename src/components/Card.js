@@ -1,10 +1,20 @@
 import React from "react";
 import { Bolt, HourglassBottom } from "@mui/icons-material";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Link, Typography } from "@mui/material";
 
-const data =
-    "This is a sample job and you must have displayed it to understand that its not just some random lorem ipsum text butsomething which was manually written. Oh well, if random text is what you were looking for then here it is: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages and now in this assignment.";
-const Card = () => {
+const Card = ({
+    companyName,
+    jdLink,
+    jobDetailsFromCompany,
+    jobRole,
+    location,
+    logoUrl,
+    maxExp,
+    maxJdSalary,
+    minExp,
+    minJdSalary,
+    salaryCurrencyCode,
+}) => {
     return (
         <Box
             sx={{
@@ -36,24 +46,31 @@ const Card = () => {
                         width: 60,
                         marginRight: "10px",
                     }}
-                    src="https://logo.clearbit.com/dropbox.com"
+                    src={`${logoUrl}`}
                     alt="logo"
                 />
                 <Box>
-                    <Typography sx={{ color: "#8B8B8B" }}>fampay</Typography>
-                    <Typography>Backend Engineer</Typography>
-                    <Typography>Bangalore</Typography>
+                    <Typography sx={{ color: "#8B8B8B" }}>
+                        {companyName}
+                    </Typography>
+                    <Typography>{jobRole}</Typography>
+                    <Typography>{location}</Typography>
                 </Box>
             </Box>
-            <p>Estimated Salary: 18 - 35LPA</p>
+            <p>{`Estimated Salary: ${salaryCurrencyCode} ${
+                minJdSalary === null ? "not available" : minJdSalary
+            } - ${
+                maxJdSalary === null ? "not available" : maxJdSalary
+            } KPA`}</p>
             <Typography>About Company:</Typography>
             <Typography>About us</Typography>
             <Box style={{ position: "relative" }}>
                 <Box style={{ position: "relative" }}>
                     <Typography>
-                        {data.length <= 250
-                            ? data
-                            : data.substr(0, 250) + "..."}
+                        {jobDetailsFromCompany?.length <= 250
+                            ? jobDetailsFromCompany
+                            : (jobDetailsFromCompany?.substring(0, 250) || "") +
+                              "..."}
                     </Typography>
                     <Box
                         style={{
@@ -63,7 +80,7 @@ const Card = () => {
                             bottom: "-25px",
                             height: "160px",
                             background:
-                                "linear-gradient(to bottom, transparent, white)", // Gradient from transparent to white
+                                "linear-gradient(to bottom, transparent, white)",
                         }}
                     />
                 </Box>
@@ -83,7 +100,9 @@ const Card = () => {
             </Box>
 
             <Box sx={{ color: "#8B8B8B" }}>Minimum Experience</Box>
-            <Box sx={{ color: "#666666" }}>2 years</Box>
+            <Box sx={{ color: "#666666" }}>
+                {minExp === null ? "not available" : minExp} years
+            </Box>
             <Button
                 variant="solid"
                 sx={{
@@ -97,6 +116,8 @@ const Card = () => {
                         backgroundColor: "#54EFC3",
                     },
                 }}
+                component={Link}
+                to={jdLink}
             >
                 <Bolt sx={{ color: "yellow" }} />
                 Easy Apply
