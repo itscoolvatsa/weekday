@@ -35,8 +35,6 @@ const Card = () => {
                         height: 80,
                         width: 60,
                         marginRight: "10px",
-                        // maxHeight: { xs: 233, md: 167 },
-                        // maxWidth: { xs: 350, md: 250 },
                     }}
                     src="https://logo.clearbit.com/dropbox.com"
                     alt="logo"
@@ -95,9 +93,12 @@ const Card = () => {
                     width: "100%",
                     background: "#54EFC3",
                     marginTop: "10px",
+                    "&:hover": {
+                        backgroundColor: "#54EFC3",
+                    },
                 }}
             >
-                <Bolt />
+                <Bolt sx={{ color: "yellow" }} />
                 Easy Apply
             </Button>
             <Button
@@ -107,6 +108,9 @@ const Card = () => {
                     marginTop: "10px",
                     color: "#ffffff",
                     background: "#4943DA",
+                    "&:hover": {
+                        backgroundColor: "#4943DA",
+                    },
                 }}
             >
                 Unlock referral asks
