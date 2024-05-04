@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Card from "../components/Card";
-import Dropdown from "../components/Dropdown";
+import { Dropdown, MultiSelectAutocomplete } from "../components/Dropdown";
 import getJobs from "../requests/getJobs";
 import { experience, noOfEmployees, salary } from "../utils/employees";
 import { roles, workLocaltion } from "../utils/roles";
@@ -9,11 +9,43 @@ import { roles, workLocaltion } from "../utils/roles";
 const Home = () => {
     const uri = "https://api.weekday.technology/adhoc/getSampleJdJSON";
 
+    // jobs state
     const [jobs, setJobs] = useState([]);
+    // offset to control the data loading as per the scroll
     const [offset, setOffset] = useState(0);
     const [loading, setLoading] = useState(false);
+
     const pageRef = useRef(null);
 
+    // states for dropdown for filtering data
+    const [selectedRoles, setSelectedRoles] = useState("");
+    const [selectedNoOfEmployees, setSelectedNoOfEmployees] = useState("");
+    const [selectedExperience, setSelectedExperience] = useState("");
+    const [selectedWorkLocation, setSelectedWorkLocation] = useState("");
+    const [selectedSalary, setSelectedSalary] = useState("");
+
+    // Handlers for dropdown changes
+    const handleRolesChange = (data) => {
+        setSelectedRoles(data);
+    };
+
+    const handleNoOfEmployeesChange = (data) => {
+        setSelectedNoOfEmployees(data);
+    };
+
+    const handleExperienceChange = (data) => {
+        setSelectedExperience(data);
+    };
+
+    const handleWorkLocationChange = (data) => {
+        setSelectedWorkLocation(data);
+    };
+
+    const handleSalaryChange = (data) => {
+        setSelectedSalary(data);
+    };
+
+    // for the first load (for loading 9 jobs)
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -117,17 +149,37 @@ const Home = () => {
             }}
         >
             <Box>
-                <Dropdown data={roles} defaultValue="roles" />
-                <Dropdown
+                <MultiSelectAutocomplete
+                    data={roles}
+                    defaultValue="roles"
+                    onSelectedDataChange={handleRolesChange}
+                />
+                <MultiSelectAutocomplete
                     data={noOfEmployees}
                     defaultValue="Number Of Employees"
+                    onSelectedDataChange={handleNoOfEmployeesChange}
                 />
-                <Dropdown data={experience} defaultValue="Experience" />
-                <Dropdown data={workLocaltion} defaultValue="Remote" />
-                <Dropdown
+                <MultiSelectAutocomplete
+                    data={experience}
+                    defaultValue="Experience"
+                    onSelectedDataChange={handleExperienceChange}
+                />
+                <MultiSelectAutocomplete
+                    data={workLocaltion}
+                    defaultValue="Remote"
+                    onSelectedDataChange={handleWorkLocationChange}
+                />
+                {/* <Dropdown
                     data={salary}
                     defaultValue="Minimum Base Pay Salary"
+                    onSelectedDataChange={handleSalaryChange}
+                /> */}
+                <MultiSelectAutocomplete
+                    data={salary}
+                    defaultValue="Minimum Base Pay Salary"
+                    onSelectedDataChange={handleSalaryChange}
                 />
+                {/* {console.log(salary)} */}
             </Box>
 
             {renderCards()}
