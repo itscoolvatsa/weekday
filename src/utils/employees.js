@@ -1,4 +1,4 @@
-noOfEmployess: [
+const noOfEmployees = [
     "1-10",
     "11-20",
     "21-50",
@@ -8,6 +8,8 @@ noOfEmployess: [
     "500+",
 ];
 
-experience = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+const experience = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
-salary = ["0L", "10L", "20L", "30L", "40L", "50L", "60L", "70L"];
+const salary = ["0L", "10L", "20L", "30L", "40L", "50L", "60L", "70L"];
+
+export { experience, noOfEmployees, salary };

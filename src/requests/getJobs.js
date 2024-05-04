@@ -1,16 +1,6 @@
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
-// const body = JSON.stringify({
-//     limit: 9,
-//     offset: 0,
-// });
-
-// const requestOptions = {
-//     method: "POST",
-//     headers: myHeaders,
-//     body,
-// };
 const getJobs = async (uri, offset) => {
     const body = JSON.stringify({
         limit: 9,

@@ -1,6 +1,6 @@
-import React from "react";
 import { Bolt, HourglassBottom } from "@mui/icons-material";
 import { Box, Button, Link, Typography } from "@mui/material";
+import React from "react";
 import capitalize from "../utils/stringUtils";
 
 const Card = ({

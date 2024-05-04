@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import { Box } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
 import Card from "../components/Card";
-import getJobs from "../requests/getJobs";
-import { Box, MenuItem, TextField } from "@mui/material";
-import { roles } from "../utils/roles";
 import Dropdown from "../components/Dropdown";
+import getJobs from "../requests/getJobs";
+import { experience, noOfEmployees, salary } from "../utils/employees";
+import { roles, workLocaltion } from "../utils/roles";
 
 const Home = () => {
     const uri = "https://api.weekday.technology/adhoc/getSampleJdJSON";
@@ -115,25 +116,24 @@ const Home = () => {
                 margin: "0 auto",
             }}
         >
-            {/* <TextField
-                select
-                label="Select"
-                defaultValue="Roles"
-                // helperText="Roles"
-                variant="outlined"
-                placeholder="Roles"
-                sx={{ m: 1, width: "250px" }}
-            >
-                {roles.map((option) => (
-                    <MenuItem key={option} value={option}>
-                        {option}
-                    </MenuItem>
-                ))}
-            </TextField> */}
-            <Dropdown data={roles} defaultValue="roles" />
+            <Box>
+                <Dropdown data={roles} defaultValue="roles" />
+                <Dropdown
+                    data={noOfEmployees}
+                    defaultValue="Number Of Employees"
+                />
+                <Dropdown data={experience} defaultValue="Experience" />
+                <Dropdown data={workLocaltion} defaultValue="Remote" />
+                <Dropdown
+                    data={salary}
+                    defaultValue="Minimum Base Pay Salary"
+                />
+            </Box>
 
             {renderCards()}
+
             <div ref={pageRef}></div>
+
             {loading && <div>Loading...</div>}
         </div>
     );
