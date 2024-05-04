@@ -1,7 +1,7 @@
 import React from "react";
 import { Bolt, HourglassBottom } from "@mui/icons-material";
 import { Box, Button, Link, Typography } from "@mui/material";
-import capitalize from "../utils/utils";
+import capitalize from "../utils/stringUtils";
 
 const Card = ({
     companyName,
