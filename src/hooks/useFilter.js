@@ -6,7 +6,8 @@ const filterJobs = (
     selectedNoOfEmployees,
     selectedExperience,
     selectedWorkLocation,
-    selectedSalary
+    selectedSalary,
+    selectedCompany
 ) => {
     return jobs.filter((job) => {
         // Filter by selected roles
@@ -58,6 +59,14 @@ const filterJobs = (
         }
 
         // Filter by selected number of employees N/A
+        if (
+            selectedCompany &&
+            !job.companyName
+                .toLowerCase()
+                .includes(selectedCompany.toLowerCase())
+        ) {
+            return false;
+        }
 
         return true;
     });

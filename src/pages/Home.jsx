@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Card from "../components/Card";
 import { MultiSelectAutocomplete } from "../components/Dropdown";
@@ -6,6 +6,7 @@ import filterJobs from "../hooks/useFilter";
 import getJobs from "../requests/getJobs";
 import { experience, noOfEmployees, salary } from "../utils/employees";
 import { roles, workLocaltion } from "../utils/roles";
+import "./home.css";
 
 const Home = () => {
     const uri = "https://api.weekday.technology/adhoc/getSampleJdJSON";
@@ -25,6 +26,7 @@ const Home = () => {
     const [selectedExperience, setSelectedExperience] = useState([]);
     const [selectedWorkLocation, setSelectedWorkLocation] = useState([]);
     const [selectedSalary, setSelectedSalary] = useState([]);
+    const [selectedCompany, setSelectedCompany] = useState("");
 
     // Handlers for dropdown changes
     const handleRolesChange = (data) => {
@@ -45,6 +47,10 @@ const Home = () => {
 
     const handleSalaryChange = (data) => {
         setSelectedSalary(data);
+    };
+
+    const handleCompanyChange = (data) => {
+        setSelectedCompany(data);
     };
 
     useEffect(() => {
@@ -94,7 +100,8 @@ const Home = () => {
             selectedNoOfEmployees,
             selectedExperience,
             selectedWorkLocation,
-            selectedSalary
+            selectedSalary,
+            selectedCompany
         );
 
         // Set the filtered jobs state
@@ -106,24 +113,13 @@ const Home = () => {
         selectedExperience,
         selectedWorkLocation,
         selectedSalary,
+        selectedCompany,
     ]);
 
     const renderCards = () => (
-        <Box
-            display="flex"
-            flexWrap="wrap"
-            justifyContent="center"
-            maxWidth="1920px"
-            margin="0 auto"
-        >
+        <Box className="card__container">
             {filteredJobs.map((job) => (
-                <div
-                    key={job.jdUid}
-                    style={{
-                        flex: "0 0 calc(33.33% - 20px)",
-                        marginBottom: "20px",
-                    }}
-                >
+                <div key={job.jdUid} className="card__wrapper">
                     <Card
                         companyName={job.companyName}
                         jdLink={job.jdLink}
@@ -144,15 +140,7 @@ const Home = () => {
     );
 
     return (
-        <div
-            style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                maxWidth: "1920px",
-                margin: "0 auto",
-            }}
-        >
+        <Box className="container">
             <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <MultiSelectAutocomplete
                     data={roles}
@@ -179,14 +167,22 @@ const Home = () => {
                     defaultValue="Minimum Base Pay Salary"
                     onSelectedDataChange={handleSalaryChange}
                 />
+                <TextField
+                    label="Company"
+                    variant="outlined"
+                    sx={{ m: 1, width: "250px" }}
+                    onChange={(e) => {
+                        handleCompanyChange(e.target.value);
+                    }}
+                />
             </Box>
 
             {renderCards()}
 
             <div ref={pageRef}></div>
 
-            {loading && <div>Loading...</div>}
-        </div>
+            {loading && <p>Loading...</p>}
+        </Box>
     );
 };
 
