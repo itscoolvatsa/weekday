@@ -53,33 +53,50 @@ const Home = () => {
         setSelectedCompany(data);
     };
 
+    const loadMoreData = async () => {
+        try {
+            setLoading(true);
+            const data = await getJobs(uri, offset);
+            setOffset((prevOffset) => prevOffset + 9); // Increment offset
+            setJobs((prevJobs) => [...prevJobs, ...data]);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleScroll = () => {
+        const scrollHeight = document.documentElement.scrollHeight;
+        const scrollTop =
+            document.documentElement.scrollTop || document.body.scrollTop;
+        const clientHeight = document.documentElement.clientHeight;
+
+        if (scrollTop + clientHeight >= scrollHeight - 5 && !loading) {
+            loadMoreData();
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [loading, offset]);
+
     useEffect(() => {
         let pgref = pageRef.current;
 
-        const handleIntersect = (entries) => {
-            if (entries[0].isIntersecting && !loading) {
-                loadMoreData();
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && !loading) {
+                    loadMoreData();
+                }
+            },
+            {
+                root: null,
+                rootMargin: "0px",
+                threshold: 1.0,
             }
-        };
-
-        const loadMoreData = async () => {
-            try {
-                setLoading(true);
-                const data = await getJobs(uri, offset);
-                setOffset((prevOffset) => prevOffset + 9); // Increment offset
-                setJobs((prevJobs) => [...prevJobs, ...data]);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        const observer = new IntersectionObserver(handleIntersect, {
-            root: null,
-            rootMargin: "0px",
-            threshold: 1.0,
-        });
+        );
 
         if (pgref) {
             observer.observe(pgref);
@@ -90,7 +107,7 @@ const Home = () => {
                 observer.unobserve(pgref);
             }
         };
-    }, [loading, offset]);
+    }, [loading]);
 
     useEffect(() => {
         // Filter the loaded jobs based on the applied filters
@@ -181,7 +198,7 @@ const Home = () => {
 
             <div ref={pageRef}></div>
 
-            {loading && <p>Loading...</p>}
+            {loading && <div>Loading...</div>}
         </Box>
     );
 };
