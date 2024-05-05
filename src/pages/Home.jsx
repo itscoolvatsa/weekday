@@ -2,9 +2,10 @@ import { Box } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Card from "../components/Card";
 import { MultiSelectAutocomplete } from "../components/Dropdown";
+import filterJobs from "../hooks/useFilter";
 import getJobs from "../requests/getJobs";
 import { experience, noOfEmployees, salary } from "../utils/employees";
-import { roles, rolesExpanded, workLocaltion } from "../utils/roles";
+import { roles, workLocaltion } from "../utils/roles";
 
 const Home = () => {
     const uri = "https://api.weekday.technology/adhoc/getSampleJdJSON";
@@ -47,13 +48,13 @@ const Home = () => {
     };
 
     useEffect(() => {
+        let pgref = pageRef.current;
+
         const handleIntersect = (entries) => {
             if (entries[0].isIntersecting && !loading) {
                 loadMoreData();
             }
         };
-
-        let pgref = pageRef.current;
 
         const loadMoreData = async () => {
             try {
@@ -85,70 +86,6 @@ const Home = () => {
         };
     }, [loading, offset]);
 
-    const filterJobs = (
-        jobs,
-        selectedRoles,
-        selectedNoOfEmployees,
-        selectedExperience,
-        selectedWorkLocation,
-        selectedSalary
-    ) => {
-        return jobs.filter((job) => {
-            // Filter by selected roles
-            if (
-                selectedRoles.length > 0 &&
-                !selectedRoles.some(
-                    (role) =>
-                        rolesExpanded[role]["cluster"].toLowerCase() ===
-                            job.jobRole.toLowerCase() ||
-                        (rolesExpanded[role]["secondaryCluster"] &&
-                            rolesExpanded[role][
-                                "secondaryCluster"
-                            ].toLowerCase() === job.jobRole.toLowerCase())
-                )
-            ) {
-                return false;
-            }
-
-            // Filter by selected work location
-            if (
-                selectedWorkLocation.length > 0 &&
-                !selectedWorkLocation.some(
-                    (location) =>
-                        location.toLowerCase() === job.location.toLowerCase()
-                )
-            ) {
-                return false;
-            }
-
-            // Filter by selected salary
-            if (
-                selectedSalary.length > 0 &&
-                !selectedSalary.some(
-                    (salary) =>
-                        job.minJdSalary === null || job.minJdSalary >= salary
-                )
-            ) {
-                return false;
-            }
-
-            // Filter by selected experience
-            if (
-                selectedExperience.length > 0 &&
-                !selectedExperience.some(
-                    (experience) =>
-                        job.minExp === null || job.minExp >= experience
-                )
-            ) {
-                return false;
-            }
-
-            // Filter by selected number of employees N/A
-
-            return true;
-        });
-    };
-
     useEffect(() => {
         // Filter the loaded jobs based on the applied filters
         const filtered = filterJobs(
@@ -179,8 +116,6 @@ const Home = () => {
             maxWidth="1920px"
             margin="0 auto"
         >
-            {" "}
-            {console.log(jobs.length)}
             {filteredJobs.map((job) => (
                 <div
                     key={job.jdUid}
