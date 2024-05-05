@@ -61,6 +61,7 @@ const filterJobs = (
         // Filter by selected number of employees N/A
         if (
             selectedCompany &&
+            job.companyName !== null &&
             !job.companyName
                 .toLowerCase()
                 .includes(selectedCompany.toLowerCase())

@@ -53,7 +53,7 @@ const Card = ({
                 />
                 <Box>
                     <Typography sx={{ color: "#8B8B8B" }}>
-                        {companyName}
+                        {companyName === null ? "not available" : companyName}
                     </Typography>
                     <Typography>{capitalize(jobRole)}</Typography>
                     <Typography>{capitalize(location)}</Typography>
